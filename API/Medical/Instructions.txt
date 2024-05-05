@@ -1,0 +1,10 @@
+See basic ouput
+http://localhost:5170/
+
+read all
+
+http://localhost:5170/api/Medicines
+
+Read medicine data by id
+http://localhost:5170/api/Medicines/1
+

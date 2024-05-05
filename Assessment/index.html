@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Image next</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='css\main.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src='dst\index.js'></script>
+</head>
+<body>
+    <div class="container">
+       
+        <div id="image-displayer">
+            <button onclick="moveLeft()">
+            <i class="fa fa-arrow-left" style="font-size: 48px; background-color: transparent; border: none;"></i>
+            </button>
+            <div id="image-display">
+                <img src="Images\tomato.jpg" id="image">
+            </div>
+            <button onclick="moveRight()">
+            <i class="fa fa-arrow-right" style="font-size: 48px; background-color: transparent; border: none;"></i>
+            </button>
+        </div>
+        <div id="image-caption">
+            <h3 id="name">Tomato</h3>
+        </div>
+    </div>
+</body>
+</html>

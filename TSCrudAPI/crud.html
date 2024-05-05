@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacts CRUD</title>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  form {
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+  <h1>Contacts</h1>
+  <form id="form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br><br>
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone" name="phone" required><br><br>
+    <button type="submit" id="submitBtn">Add Contact</button>
+    <button type="button" id="cancelBtn">Cancel</button>
+  </form>
+  <table id="contactTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="contactTableBody">
+      <!-- Table rows will be inserted here -->
+    </tbody>
+  </table>
+
+  <script src="crud.js"></script>
+</body>
+</html>
