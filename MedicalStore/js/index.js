@@ -1,6 +1,15 @@
 "use strict";
-let UserIdAutoIncrement = 1000;
-let MedicineIdAutoIncrement = 10;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+let UserIdAutoIncrement = 1002;
+let MedicineIdAutoIncrement = 15;
 let OrderIdAutoIncrement = 100;
 let OrderStatus;
 let CurrentUserName;
@@ -9,52 +18,8 @@ let currentMedicine;
 let currentUserBalance;
 let quantity;
 let globalOrderId;
-let medicineID;
+let medicineIDNew;
 let NewUserNameStatus = true;
-// const tableBody = document.querySelector("#medicine-table tbody") as HTMLTableSectionElement;
-// let userName=(document.getElementById("uname") as HTMLInputElement)?.value;
-// (document.getElementById("welcome-name") as HTMLElement).innerHTML=userName;
-class User {
-    constructor(paramName, paramUserName, paramUserPassword, paramUserBalance) {
-        UserIdAutoIncrement++;
-        this.UserId = "UI" + UserIdAutoIncrement.toString();
-        this.Name = paramName;
-        this.UserName = paramUserName;
-        this.UserPassword = paramUserPassword;
-        this.UserBalance = paramUserBalance;
-    }
-}
-class MedicineInfo {
-    constructor(paramMedicineName, paramMedicinePrice, paramMedicineCount, paramMedicineExpiry) {
-        MedicineIdAutoIncrement++;
-        this.MedicineId = "MD" + MedicineIdAutoIncrement.toString();
-        this.MedicineName = paramMedicineName;
-        this.MedicineCount = paramMedicineCount;
-        this.MedicinePrice = paramMedicinePrice;
-        this.MedicineExpiry = paramMedicineExpiry;
-    }
-}
-class Order {
-    constructor(paramMedicineId, paramUserId, paramMedicineName, paramMedicineCount, paramOrderStatus) {
-        OrderIdAutoIncrement++;
-        this.OrderId = "OI" + OrderIdAutoIncrement.toString();
-        this.MedicineId = paramMedicineId;
-        this.UserId = paramUserId;
-        this.MedicineName = paramMedicineName;
-        this.MedicineCount = paramMedicineCount;
-        this.OrderStatusCancel = paramOrderStatus;
-    }
-}
-let UserArrayList = new Array();
-UserArrayList.push(new User("Hemanth", "Hemanth@gmail.com", "123", 100));
-UserArrayList.push(new User("Harish", "Harish@gmail.com", "456", 200));
-let MedicineList = new Array();
-MedicineList.push(new MedicineInfo("Paracetomol", 50, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Colpal", 60, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Stepsil", 70, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Iodex", 80, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Acetherol", 100, 5, new Date("2024-05-31")));
-let OrderList = new Array();
 function displaySignUp() {
     let normalPage = document.getElementById("sign-in-form");
     let signUpPage = document.getElementById("sign-up-form");
@@ -70,69 +35,132 @@ function displaySignIn() {
     signInPage.style.alignItems = "center";
 }
 function takeToMainMenuBySignUp() {
-    if (NewUserNameStatus == true) {
-        let newName = document.getElementById("uname").value;
-        let newUserName = document.getElementById('sign-up-email-id').value;
-        let newUserPassword = document.getElementById('sign-up-password').value;
-        UserArrayList.push(new User(newName, newUserName, newUserPassword, 150));
-        let container = document.getElementById("container");
-        let menu = document.getElementById("menu");
-        container.style.display = "none";
-        menu.style.display = "inline";
-        currentUser = UserArrayList[UserArrayList.length];
+    return __awaiter(this, void 0, void 0, function* () {
+        const UserArrayList = yield fetchUsers();
+        if (NewUserNameStatus == true) {
+            let newName = document.getElementById("uname").value;
+            let newUserName = document.getElementById('sign-up-email-id').value;
+            let newUserPassword = document.getElementById('sign-up-password').value;
+            let confirmUserPassword = document.getElementById("confirm-password").value;
+            if (NameCheck(newName)) {
+                if (UserNameCheck(newUserName)) {
+                    if (PasswordCheck(newUserPassword)) {
+                        if (SamePassword(newUserPassword, confirmUserPassword)) {
+                            const user = {
+                                userID: 0,
+                                name: newName,
+                                userName: newUserName,
+                                userPassword: newUserPassword,
+                                userBalance: 100
+                            };
+                            UserIdAutoIncrement = user.userID;
+                            addContact(user);
+                            let signUpPage = document.getElementById("sign-up-form");
+                            let signInPage = document.getElementById("sign-in-form");
+                            signUpPage.style.display = "none";
+                            signInPage.style.display = "flex";
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            alert("Entered details are wrong");
+        }
+    });
+}
+function NameCheck(name) {
+    var letters = /^[A-Za-z]+$/;
+    if (letters.test(name)) {
+        return true;
     }
     else {
-        alert("Entered details are wrong");
+        alert('Username must have alphabet characters only');
+        return false;
     }
+}
+function UserNameCheck(userName) {
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (mailformat.test(userName)) {
+        return true;
+    }
+    else {
+        alert('Invalid emailID');
+        return false;
+    }
+}
+function PasswordCheck(password) {
+    var pass = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8, 20}$/;
+    if (pass.test(password) == false) {
+        return true;
+    }
+    else {
+        alert("Invalid password");
+        return false;
+    }
+}
+function SamePassword(pass1, pass2) {
+    if (pass1 != pass2) {
+        alert("Password does not match");
+        return false;
+    }
+    return true;
 }
 function takeToMainMenuBySignIn() {
-    let userEmail = document.getElementById("email-id").value;
-    let userPassword = document.getElementById("password").value;
-    let isTrue = true;
-    for (let i = 0; i < UserArrayList.length; i++) {
-        if (UserArrayList[i].UserName == userEmail && UserArrayList[i].UserPassword == userPassword) {
-            let container = document.getElementById("container");
-            let menu = document.getElementById("menu");
-            container.style.display = "none";
-            menu.style.display = "inline";
-            isTrue = false;
-            currentUser = UserArrayList[i];
-            currentUserBalance = UserArrayList[i].UserBalance;
-            return;
+    return __awaiter(this, void 0, void 0, function* () {
+        const UserArrayList = yield fetchUsers();
+        let userEmail = document.getElementById("email-id").value;
+        let userPassword = document.getElementById("password").value;
+        let isTrue = true;
+        for (let i = 0; i < UserArrayList.length; i++) {
+            if (UserArrayList[i].userName == userEmail && UserArrayList[i].userPassword == userPassword) {
+                let container = document.getElementById("container");
+                let menu = document.getElementById("menu");
+                container.style.display = "none";
+                menu.style.display = "inline";
+                isTrue = false;
+                currentUser = UserArrayList[i];
+                currentUserBalance = UserArrayList[i].userBalance;
+                return;
+            }
         }
-    }
-    if (isTrue) {
-        alert("Invalid credentials");
-    }
+        if (isTrue) {
+            alert("Invalid credentials");
+        }
+    });
 }
 function displayMedicineList() {
-    const tableBody = document.querySelector("#medicine-table tbody");
-    tableBody.innerHTML = "";
-    MedicineList.forEach((medicine) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-                <td>${medicine.MedicineName}</td>
-                <td>${medicine.MedicinePrice}</td>
-                <td>${medicine.MedicineCount}</td>
-                <td>${medicine.MedicineExpiry.toDateString()}</td>
+    return __awaiter(this, void 0, void 0, function* () {
+        const MedicineList = yield fetchMedicines();
+        const tableBody = document.querySelector("#medicine-table tbody");
+        tableBody.innerHTML = "";
+        MedicineList.forEach((medicine) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${medicine.medicineName}</td>
+                <td>${medicine.medicinePrice}</td>
+                <td>${medicine.medicineCount}</td>
+                <td>${medicine.medicineExpiry.toString().split('T')[0].split('-').reverse().join('/')}</td>
                 <td>
-                    <input type="button" value="Edit" id="edit-btn" onclick="setMedicineIdNew('${medicine.MedicineId}');">
-                    <input type="button" value="Delete" id="delete-btn" onclick="deleteRow('${medicine.MedicineId}');">
+                    <input type="button" value="Edit" id="edit-btn" onclick="setMedicineIdNew(${medicine.medicineID});">
+                    <input type="button" value="Delete" id="delete-btn" onclick="deleteRow(${medicine.medicineID});">
                 </td>
             `;
-        tableBody.appendChild(row);
+            tableBody.appendChild(row);
+        });
     });
 }
 ;
 function deleteRow(id) {
-    MedicineList = MedicineList.filter((item) => item.MedicineId != id);
+    // MedicineList = MedicineList.filter((item) => item.medicineId != id);
+    deleteMedicine(id);
     displayMedicineList();
 }
 function displayEditForm() {
-    editRow(medicineID);
+    editRow(medicineIDNew);
 }
 function setMedicineIdNew(id) {
-    medicineID = id;
+    medicineIDNew = id;
     hideAll();
     let buyForm = document.getElementById("edit-form");
     buyForm.style.display = "flex";
@@ -142,16 +170,14 @@ function editRow(id) {
     let medicinePrice = document.getElementById("medicine-price").value;
     let medicineQuantity = document.getElementById("medicine-quantity").value;
     let medicineExpiry = document.getElementById("medicine-expiry").value;
-    for (let i = 0; i < MedicineList.length; i++) {
-        if (MedicineList[i].MedicineId == id) {
-            MedicineList[i].MedicineName = medicineName;
-            MedicineList[i].MedicinePrice = parseInt(medicinePrice);
-            MedicineList[i].MedicineCount = parseInt(medicineQuantity);
-            MedicineList[i].MedicineExpiry = new Date(medicineExpiry);
-            hideAll();
-            return;
-        }
-    }
+    const editMedicine = {
+        medicineID: medicineIDNew,
+        medicineName: medicineName,
+        medicinePrice: parseInt(medicinePrice),
+        medicineCount: parseInt(medicineQuantity),
+        medicineExpiry: new Date(medicineExpiry)
+    };
+    updateMedicine(medicineIDNew, editMedicine);
     displayMedicineList();
 }
 ;
@@ -165,14 +191,23 @@ function displayAddForm() {
     displayForm.style.display = "block";
 }
 function addRow() {
-    let medName = document.getElementById("add-medicine-name").value;
-    let medPrice = document.getElementById("add-price").value;
-    let medQuantity = document.getElementById("add-quantity").value;
-    let medExpiry = document.getElementById("add-expiry").value;
-    let newMedicine = new MedicineInfo(medName, parseInt(medPrice), parseInt(medQuantity), new Date(medExpiry));
-    MedicineList.push(newMedicine);
-    alert("Medicine added successfully");
-    displayMedicineDetails();
+    return __awaiter(this, void 0, void 0, function* () {
+        let medName = document.getElementById("add-medicine-name").value;
+        let medPrice = document.getElementById("add-price").value;
+        let medQuantity = document.getElementById("add-quantity").value;
+        let medExpiry = document.getElementById("add-expiry").value;
+        const MedicineList = yield fetchMedicines();
+        const medicine = {
+            medicineID: 0,
+            medicineName: medName,
+            medicinePrice: parseInt(medPrice),
+            medicineCount: parseInt(medQuantity),
+            medicineExpiry: new Date(medExpiry)
+        };
+        addMedicine(medicine);
+        alert("Medicine added successfully");
+        displayMedicineDetails();
+    });
 }
 function displayMedicineDetails() {
     hideAll();
@@ -184,25 +219,28 @@ function displayMedicineDetails() {
 }
 ;
 function displayMedicineListForPurchase() {
-    const tableBody = document.querySelector("#purchase-table tbody");
-    tableBody.innerHTML = "";
-    MedicineList.forEach((medicine) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-                <td>${medicine.MedicineName}</td>
-                <td>${medicine.MedicinePrice}</td>
-                <td>${medicine.MedicineCount}</td>
-                <td>${medicine.MedicineExpiry.toDateString()}</td>
+    return __awaiter(this, void 0, void 0, function* () {
+        const tableBody = document.querySelector("#purchase-table tbody");
+        const MedicineList = yield fetchMedicines();
+        tableBody.innerHTML = "";
+        MedicineList.forEach((medicine) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${medicine.medicineName}</td>
+                <td>${medicine.medicinePrice}</td>
+                <td>${medicine.medicineCount}</td>
+                <td>${medicine.medicineExpiry.toString().split('T')[0].split('-').reverse().join('/')}</td>
                 <td>
-                 <input type="button" value="BUY" id="${medicine.MedicineId}" onclick="setMedicineID('${medicine.MedicineId}');">
+                 <input type="button" value="BUY" id="${medicine.medicineID}" onclick="setMedicineID('${medicine.medicineID}');">
                 </td>
             `;
-        tableBody.appendChild(row);
+            tableBody.appendChild(row);
+        });
     });
 }
 ;
 function setMedicineID(id) {
-    medicineID = id;
+    medicineIDNew = id;
     let purchase = document.getElementById("purchase-content");
     let buyForm = document.getElementById("buy-medicine");
     purchase.style.display = "none";
@@ -221,68 +259,136 @@ function getQuantity() {
 }
 ;
 function buyTheMedicines(quantity) {
-    for (let i = 0; i < MedicineList.length; i++) {
-        if (medicineID == MedicineList[i].MedicineId) {
-            if (MedicineList[i].MedicineCount >= quantity) {
-                if (quantity * MedicineList[i].MedicinePrice <= currentUser.UserBalance) {
-                    let newOrder = new Order(medicineID, currentUser.UserId, MedicineList[i].MedicineName, quantity, "Ordered");
-                    OrderList.push(newOrder);
-                    currentUser.UserBalance -= quantity * MedicineList[i].MedicinePrice;
-                    MedicineList[i].MedicineCount -= quantity;
-                    alert("Purchase successfull");
-                    hideAll();
-                    return;
+    return __awaiter(this, void 0, void 0, function* () {
+        const MedicineList = yield fetchMedicines();
+        const OrderList = yield fetchOrders();
+        for (let i = 0; i < MedicineList.length; i++) {
+            if (medicineIDNew == MedicineList[i].medicineID) {
+                if (MedicineList[i].medicineCount >= quantity) {
+                    if (quantity * MedicineList[i].medicinePrice <= currentUser.userBalance) {
+                        const order = {
+                            orderID: 0,
+                            medicineID: MedicineList[i].medicineID,
+                            userID: currentUser.userID,
+                            medicineName: MedicineList[i].medicineName,
+                            medicineCount: quantity,
+                            orderStatusCancel: "Ordered"
+                        };
+                        addOrder(order);
+                        currentUser.userBalance -= quantity * MedicineList[i].medicinePrice;
+                        const user = {
+                            userID: currentUser.userID,
+                            userName: currentUser.userName,
+                            userBalance: currentUser.userBalance,
+                            name: currentUser.name,
+                            userPassword: currentUser.userPassword
+                        };
+                        updateUser(currentUser.userID, user);
+                        const medicine = {
+                            medicineID: MedicineList[i].medicineID,
+                            medicineName: MedicineList[i].medicineName,
+                            medicinePrice: MedicineList[i].medicinePrice,
+                            medicineCount: MedicineList[i].medicineCount - quantity,
+                            medicineExpiry: MedicineList[i].medicineExpiry
+                        };
+                        updateMedicine(MedicineList[i].medicineID, medicine);
+                        alert("Purchase successfull");
+                        hideAll();
+                        return;
+                    }
+                    else {
+                        alert("Insufficient balance");
+                        break;
+                    }
                 }
-                else {
-                    alert("Insufficient balance");
-                    break;
-                }
+                alert("Given quantity is more than required quantity");
+                break;
             }
-            alert("Given quantity is more than required quantity");
-            break;
-        }
-    }
-}
-function displayMedicineForCancel() {
-    const tableBody = document.querySelector("#cancel-table tbody");
-    tableBody.innerHTML = "";
-    OrderList.forEach((order) => {
-        if (order.UserId == currentUser.UserId) {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                        <td>${order.MedicineName}</td>
-                        <td>${order.MedicineCount}</td>
-                        <td>
-                        
-                        <input type="button" value="CANCEL" id="cancel-btn" onclick="cancelMedicine('${order.OrderId}')">
-                        </td>
-                        <td id="${order.OrderId}">${order.OrderStatusCancel}</td>
-                    `;
-            tableBody.appendChild(row);
         }
     });
 }
+function displayMedicineForCancel() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const OrderList = yield fetchOrders();
+        const tableBody = document.querySelector("#cancel-table tbody");
+        tableBody.innerHTML = "";
+        OrderList.forEach((order) => {
+            if (order.userID == currentUser.userID) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                        <td>${order.medicineName}</td>
+                        <td>${order.medicineCount}</td>
+                        <td>
+                        
+                        <input type="button" value="CANCEL" id="cancel-btn" onclick="cancelMedicine('${order.orderID}')">
+                        </td>
+                        <td id="${order.orderID}">${order.orderStatusCancel}</td>
+                    `;
+                tableBody.appendChild(row);
+            }
+        });
+    });
+}
 function cancelMedicine(id) {
-    globalOrderId = id;
-    let status = document.getElementById(globalOrderId);
-    for (let i = 0; i < OrderList.length; i++) {
-        if (OrderList[i].OrderId == id) {
-            medicineCount(OrderList[i].MedicineId, OrderList[i].MedicineCount);
-            OrderList[i].OrderStatusCancel = "Cancelled";
-            document.getElementById(globalOrderId).innerHTML = "Cancelled";
-            document.getElementById("cancel-btn").disabled = true;
-            break;
+    return __awaiter(this, void 0, void 0, function* () {
+        globalOrderId = id;
+        const MedicineList = yield fetchMedicines();
+        let changeID = id.toString();
+        const OrderList = yield fetchOrders();
+        for (let i = 0; i < OrderList.length; i++) {
+            for (let j = 0; j < MedicineList.length; j++) {
+                if (OrderList[i].orderID == id && MedicineList[j].medicineID == OrderList[i].medicineID && OrderList[i].orderStatusCancel != "Cancelled") {
+                    const editOrder = {
+                        orderID: globalOrderId,
+                        medicineID: OrderList[i].medicineID,
+                        userID: OrderList[i].userID,
+                        medicineName: OrderList[i].medicineName,
+                        medicineCount: OrderList[i].medicineCount,
+                        orderStatusCancel: "Cancelled"
+                    };
+                    document.getElementById(changeID).innerHTML = "Cancelled";
+                    updateOrder(globalOrderId, editOrder);
+                    currentUser.userBalance += MedicineList[i].medicinePrice * OrderList[i].medicineCount;
+                    const user = {
+                        userID: currentUser.userID,
+                        userName: currentUser.userName,
+                        userBalance: currentUser.userBalance,
+                        name: currentUser.name,
+                        userPassword: currentUser.userPassword
+                    };
+                    updateUser(currentUser.userID, user);
+                    const editMedicine = {
+                        medicineID: MedicineList[j].medicineID,
+                        medicineName: MedicineList[j].medicineName,
+                        medicinePrice: MedicineList[j].medicinePrice,
+                        medicineCount: MedicineList[j].medicineCount + OrderList[i].medicineCount,
+                        medicineExpiry: MedicineList[j].medicineExpiry
+                    };
+                    updateMedicine(MedicineList[j].medicineID, editMedicine);
+                }
+            }
         }
-    }
+    });
 }
 function medicineCount(id, medicine) {
-    for (let i = 0; i < MedicineList.length; i++) {
-        if (id == MedicineList[i].MedicineId) {
-            MedicineList[i].MedicineCount += medicine;
-            currentUser.UserBalance += MedicineList[i].MedicinePrice * medicine;
-            break;
+    return __awaiter(this, void 0, void 0, function* () {
+        const MedicineList = yield fetchMedicines();
+        for (let i = 0; i < MedicineList.length; i++) {
+            if (id == MedicineList[i].medicineID) {
+                MedicineList[i].medicineCount += medicine;
+                currentUser.userBalance += MedicineList[i].medicinePrice * medicine;
+                const user = {
+                    userID: currentUser.userID,
+                    userName: currentUser.userName,
+                    userBalance: currentUser.userBalance,
+                    name: currentUser.name,
+                    userPassword: currentUser.userPassword
+                };
+                updateUser(currentUser.userID, user);
+                break;
+            }
         }
-    }
+    });
 }
 function displayCancelDetails() {
     hideAll();
@@ -292,18 +398,21 @@ function displayCancelDetails() {
 }
 //Order details
 function displayOrders() {
-    const tableBody = document.querySelector("#order-table tbody");
-    tableBody.innerHTML = "";
-    OrderList.forEach((order) => {
-        if (order.UserId == currentUser.UserId) {
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                        <td>${order.MedicineName}</td>
-                        <td>${order.MedicineCount}</td>
+    return __awaiter(this, void 0, void 0, function* () {
+        const OrderList = yield fetchOrders();
+        const tableBody = document.querySelector("#order-table tbody");
+        tableBody.innerHTML = "";
+        OrderList.forEach((order) => {
+            if (order.userID == currentUser.userID) {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                        <td>${order.medicineName}</td>
+                        <td>${order.medicineCount}</td>
 
                     `;
-            tableBody.appendChild(row);
-        }
+                tableBody.appendChild(row);
+            }
+        });
     });
 }
 function displayOrderDetails() {
@@ -319,7 +428,15 @@ function displayTopUp() {
 }
 function rechargeAmount() {
     let amount = document.getElementById("amount-to-recharge").value;
-    currentUser.UserBalance += parseInt(amount);
+    currentUser.userBalance += parseInt(amount);
+    const user = {
+        userID: currentUser.userID,
+        userName: currentUser.userName,
+        userBalance: currentUser.userBalance,
+        name: currentUser.name,
+        userPassword: currentUser.userPassword
+    };
+    updateUser(currentUser.userID, user);
     alert("recharge successfull");
     displayMedicineList();
 }
@@ -328,7 +445,7 @@ function displayShowBalanceDetails() {
     let showbalance = document.getElementById("show-balance-content");
     showbalance.style.display = "flex";
     let balance = document.getElementById("display-balance");
-    balance.value = (currentUser.UserBalance).toString();
+    balance.value = (currentUser.userBalance).toString();
 }
 function hideAll() {
     let purchase = document.getElementById("purchase-content");
@@ -349,4 +466,128 @@ function hideAll() {
     buymedicine.style.display = "none";
     buyForm.style.display = "none";
     displayForm.style.display = "none";
+}
+function fetchUsers() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiUrl = 'http://localhost:5137/api/User';
+        const response = yield fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch contacts');
+        }
+        return yield response.json();
+    });
+}
+function fetchMedicines() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiUrl = 'http://localhost:5137/api/Medicine';
+        const response = yield fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch contacts');
+        }
+        return yield response.json();
+    });
+}
+function fetchOrders() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiUrl = 'http://localhost:5137/api/Order';
+        const response = yield fetch(apiUrl);
+        if (!response.ok) {
+            throw new Error('Failed to fetch contacts');
+        }
+        return yield response.json();
+    });
+}
+function addContact(contact) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch('http://localhost:5137/api/User', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contact)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to add contact');
+        }
+    });
+}
+function addMedicine(contact) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch('http://localhost:5137/api/Medicine', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contact)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to add contact');
+        }
+    });
+}
+function addOrder(contact) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch('http://localhost:5137/api/Order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contact)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to add contact');
+        }
+    });
+}
+function updateMedicine(id, contact) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch(`http://localhost:5137/api/Medicine/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contact)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update contact');
+        }
+    });
+}
+function updateUser(id, contact) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch(`http://localhost:5137/api/User/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contact)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update contact');
+        }
+    });
+}
+function updateOrder(id, contact) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch(`http://localhost:5137/api/Order/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(contact)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update contact');
+        }
+    });
+}
+function deleteMedicine(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const response = yield fetch(`http://localhost:5137/api/Medicine/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete contact');
+        }
+    });
 }

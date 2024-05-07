@@ -1,86 +1,57 @@
-let UserIdAutoIncrement = 1000;
-let MedicineIdAutoIncrement = 10;
+let UserIdAutoIncrement = 1002;
+let MedicineIdAutoIncrement = 15;
 let OrderIdAutoIncrement = 100;
 
 let OrderStatus: string;
 let CurrentUserName: string;
-let currentUser: User;
-let currentMedicine: MedicineInfo;
+let currentUser: Users;
+let currentMedicine: Medicines;
 let currentUserBalance: number;
 let quantity: number;
-let globalOrderId: string;
-let medicineID: string;
+let globalOrderId: number;
+let medicineIDNew: number;
 
 let NewUserNameStatus = true;
-// const tableBody = document.querySelector("#medicine-table tbody") as HTMLTableSectionElement;
-// let userName=(document.getElementById("uname") as HTMLInputElement)?.value;
-// (document.getElementById("welcome-name") as HTMLElement).innerHTML=userName;
-
-class User {
-
-    UserId: string;
-    Name:string;
-    UserName: string;
-    readonly UserPassword: string;
-    UserBalance: number;
-
-    constructor(paramName:string,paramUserName: string, paramUserPassword: string, paramUserBalance: number) {
 
 
-        UserIdAutoIncrement++;
 
-        this.UserId = "UI" + UserIdAutoIncrement.toString();
-        this.Name=paramName;
-        this.UserName = paramUserName;
-        this.UserPassword = paramUserPassword;
-        this.UserBalance = paramUserBalance;
+interface Users {
 
-    }
+    userID: number;
+    name: string;
+    userName: string;
+    userPassword: string;
+    userBalance: number;
+
+
+
 
 }
 
-class MedicineInfo {
-    MedicineId: string;
-    MedicineName: string;
+interface Medicines {
+    medicineID: number;
+    medicineName: string;
 
-    MedicinePrice: number;
-    MedicineCount: number;
-    MedicineExpiry: Date;
+    medicinePrice: number;
+    medicineCount: number;
+    medicineExpiry: Date;
 
-    constructor(paramMedicineName: string, paramMedicinePrice: number, paramMedicineCount: number, paramMedicineExpiry: Date) {
-        MedicineIdAutoIncrement++;
-
-        this.MedicineId = "MD" + MedicineIdAutoIncrement.toString();
-        this.MedicineName = paramMedicineName;
-        this.MedicineCount = paramMedicineCount;
-        this.MedicinePrice = paramMedicinePrice;
-        this.MedicineExpiry = paramMedicineExpiry;
-    }
 
 }
 
 
 
-class Order {
-    OrderId: string;
-    MedicineId: string;
-    UserId: string;
 
-    MedicineName: string;
-    MedicineCount: number;
-    OrderStatusCancel: string;
 
-    constructor(paramMedicineId: string, paramUserId: string, paramMedicineName: string, paramMedicineCount: number,paramOrderStatus: string) {
-        OrderIdAutoIncrement++;
+interface Orders {
+    orderID: number;
+    medicineID: number;
+    userID: number;
 
-        this.OrderId = "OI" + OrderIdAutoIncrement.toString();
-        this.MedicineId = paramMedicineId;
-        this.UserId = paramUserId;
+    medicineName: string;
+    medicineCount: number;
+    orderStatusCancel: string;
 
-        this.MedicineName = paramMedicineName;
-        this.MedicineCount = paramMedicineCount;
-        this.OrderStatusCancel=paramOrderStatus;
-    }
 }
 
 
@@ -88,21 +59,6 @@ class Order {
 
 
 
-
-let UserArrayList: Array<User> = new Array<User>();
-
-UserArrayList.push(new User("Hemanth","Hemanth@gmail.com", "123", 100));
-UserArrayList.push(new User("Harish","Harish@gmail.com", "456", 200));
-
-let MedicineList: Array<MedicineInfo> = new Array<MedicineInfo>();
-
-MedicineList.push(new MedicineInfo("Paracetomol", 50, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Colpal", 60, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Stepsil", 70, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Iodex", 80, 5, new Date("2024-05-31")));
-MedicineList.push(new MedicineInfo("Acetherol", 100, 5, new Date("2024-05-31")));
-
-let OrderList: Array<Order> = new Array<Order>();
 
 
 
@@ -121,20 +77,42 @@ function displaySignIn() {
     signInPage.style.display = "flex";
     signInPage.style.alignItems = "center";
 }
-function takeToMainMenuBySignUp() {
+async function takeToMainMenuBySignUp() {
+    const UserArrayList = await fetchUsers();
     if (NewUserNameStatus == true) {
-        let newName=(document.getElementById("uname") as HTMLInputElement).value;
+        let newName = (document.getElementById("uname") as HTMLInputElement).value;
         let newUserName = (document.getElementById('sign-up-email-id') as HTMLInputElement).value;
         let newUserPassword = (document.getElementById('sign-up-password') as HTMLInputElement).value;
+        let confirmUserPassword=(document.getElementById("confirm-password") as HTMLInputElement).value;
+        if(NameCheck(newName))
+            {
+                if(UserNameCheck(newUserName))
+                    {
+                        if(PasswordCheck(newUserPassword))
+                            {
+                                if(SamePassword(newUserPassword,confirmUserPassword))
+                                    {
+                                        const user: Users = {
+                                            userID: 0,
+                                            name: newName,
+                                            userName: newUserName,
+                                            userPassword: newUserPassword,
+                                            userBalance: 100
+                                        };
+                                        UserIdAutoIncrement = user.userID;
+                                        addContact(user);
+                                        let signUpPage = document.getElementById("sign-up-form") as HTMLDListElement;
+                                        let signInPage = document.getElementById("sign-in-form") as HTMLDivElement;
+                                        signUpPage.style.display = "none";
+                                        signInPage.style.display="flex";
+                                    }
+                            }
+                    }
+            }
 
 
-
-        UserArrayList.push(new User(newName,newUserName, newUserPassword, 150));
-        let container = document.getElementById("container") as HTMLDListElement;
-        let menu = document.getElementById("menu") as HTMLDListElement;
-        container.style.display = "none";
-        menu.style.display = "inline";
-        currentUser = UserArrayList[UserArrayList.length];
+        
+        
     }
     else {
         alert("Entered details are wrong");
@@ -143,20 +121,67 @@ function takeToMainMenuBySignUp() {
 
 
 
+function NameCheck(name:string){
+    var letters = /^[A-Za-z]+$/;
+    if (letters.test(name)) {
+        
+        return true;
+        
+    }
+    else {
+        alert('Username must have alphabet characters only');
+        return false;
+    }
+}
 
-function takeToMainMenuBySignIn() {
+function UserNameCheck(userName:string)
+{
+    var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (mailformat.test(userName)) {
+        
+        return true;
+        
+    }
+    else {
+        alert('Invalid emailID');
+        return false;
+    }
+}
+
+function PasswordCheck(password:string)
+{
+    var pass= /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&-+=()])(?=\\S+$).{8, 20}$/
+    if(pass.test(password)==false)
+        {
+            return true;
+        }
+    else{
+        alert("Invalid password");
+        return false;
+    }
+}
+function SamePassword(pass1:string,pass2:string)
+{
+    if(pass1!=pass2){
+        alert("Password does not match");
+        return false;
+    }
+    return true;
+}
+async function takeToMainMenuBySignIn() {
+    const UserArrayList = await fetchUsers();
     let userEmail = (document.getElementById("email-id") as HTMLInputElement).value;
     let userPassword = (document.getElementById("password") as HTMLInputElement).value;
     let isTrue = true;
     for (let i = 0; i < UserArrayList.length; i++) {
-        if (UserArrayList[i].UserName == userEmail && UserArrayList[i].UserPassword == userPassword) {
+        if (UserArrayList[i].userName == userEmail && UserArrayList[i].userPassword == userPassword) {
             let container = document.getElementById("container") as HTMLDListElement;
             let menu = document.getElementById("menu") as HTMLDListElement;
             container.style.display = "none";
             menu.style.display = "inline";
             isTrue = false;
             currentUser = UserArrayList[i];
-            currentUserBalance = UserArrayList[i].UserBalance;
+            currentUserBalance = UserArrayList[i].userBalance;
             return;
         }
 
@@ -166,76 +191,82 @@ function takeToMainMenuBySignIn() {
     }
 }
 
-function displayMedicineList() {
+async function displayMedicineList() {
+    const MedicineList = await fetchMedicines();
     const tableBody = document.querySelector("#medicine-table tbody") as HTMLTableSectionElement;
     tableBody.innerHTML = "";
     MedicineList.forEach((medicine) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-                <td>${medicine.MedicineName}</td>
-                <td>${medicine.MedicinePrice}</td>
-                <td>${medicine.MedicineCount}</td>
-                <td>${medicine.MedicineExpiry.toDateString()}</td>
+                <td>${medicine.medicineName}</td>
+                <td>${medicine.medicinePrice}</td>
+                <td>${medicine.medicineCount}</td>
+                <td>${medicine.medicineExpiry.toString().split('T')[0].split('-').reverse().join('/')}</td>
                 <td>
-                    <input type="button" value="Edit" id="edit-btn" onclick="setMedicineIdNew('${medicine.MedicineId}');">
-                    <input type="button" value="Delete" id="delete-btn" onclick="deleteRow('${medicine.MedicineId}');">
+                    <input type="button" value="Edit" id="edit-btn" onclick="setMedicineIdNew(${medicine.medicineID});">
+                    <input type="button" value="Delete" id="delete-btn" onclick="deleteRow(${medicine.medicineID});">
                 </td>
             `;
         tableBody.appendChild(row);
     });
 };
-function deleteRow(id: string) {
-    MedicineList = MedicineList.filter((item) => item.MedicineId != id);
+function deleteRow(id: number) {
+    // MedicineList = MedicineList.filter((item) => item.medicineId != id);
+    deleteMedicine(id);
     displayMedicineList();
 }
 function displayEditForm() {
-    editRow(medicineID);
+    editRow(medicineIDNew);
 }
-function setMedicineIdNew(id: string) {
-    medicineID = id;
+function setMedicineIdNew(id: number) {
+    medicineIDNew = id;
     hideAll();
 
     let buyForm = document.getElementById("edit-form") as HTMLDivElement;
     buyForm.style.display = "flex";
 
 }
-function editRow(id: string) {
+function editRow(id: number) {
 
     let medicineName = (document.getElementById("medicine-name") as HTMLInputElement).value;
     let medicinePrice = (document.getElementById("medicine-price") as HTMLInputElement).value;
     let medicineQuantity = (document.getElementById("medicine-quantity") as HTMLInputElement).value;
     let medicineExpiry = (document.getElementById("medicine-expiry") as HTMLInputElement).value;
-    for (let i = 0; i < MedicineList.length; i++) {
-        if (MedicineList[i].MedicineId == id) {
-            MedicineList[i].MedicineName = medicineName;
-            MedicineList[i].MedicinePrice = parseInt(medicinePrice);
-            MedicineList[i].MedicineCount = parseInt(medicineQuantity);
-            MedicineList[i].MedicineExpiry = new Date(medicineExpiry);
-            hideAll();
-            return;
-        }
-    }
+    const editMedicine: Medicines = {
+        medicineID: medicineIDNew,
+        medicineName: medicineName,
+        medicinePrice: parseInt(medicinePrice),
+        medicineCount: parseInt(medicineQuantity),
+        medicineExpiry: new Date(medicineExpiry)
+
+    };
+    updateMedicine(medicineIDNew, editMedicine);
     displayMedicineList();
 
 };
-function displayAddForm()
-{
+function displayAddForm() {
     hideAll();
-    let displayForm=document.getElementById("add-form") as HTMLDivElement;
-    let medicine=document.getElementById("medicine-details-content") as HTMLDivElement;
-    let medicineTable=document.getElementById("medicine-table") as HTMLDivElement;
-    medicine.style.display="flex";
-    medicineTable.style.display="none";
-    displayForm.style.display="block";
+    let displayForm = document.getElementById("add-form") as HTMLDivElement;
+    let medicine = document.getElementById("medicine-details-content") as HTMLDivElement;
+    let medicineTable = document.getElementById("medicine-table") as HTMLDivElement;
+    medicine.style.display = "flex";
+    medicineTable.style.display = "none";
+    displayForm.style.display = "block";
 }
-function addRow()
-{
-    let medName=(document.getElementById("add-medicine-name") as HTMLInputElement).value;
-    let medPrice=(document.getElementById("add-price") as HTMLInputElement).value;
-    let medQuantity=(document.getElementById("add-quantity") as HTMLInputElement).value;
-    let medExpiry=(document.getElementById("add-expiry") as HTMLInputElement).value;
-    let newMedicine: MedicineInfo=new MedicineInfo(medName,parseInt(medPrice),parseInt(medQuantity),new Date(medExpiry));
-    MedicineList.push(newMedicine);
+async function addRow() {
+    let medName = (document.getElementById("add-medicine-name") as HTMLInputElement).value;
+    let medPrice = (document.getElementById("add-price") as HTMLInputElement).value;
+    let medQuantity = (document.getElementById("add-quantity") as HTMLInputElement).value;
+    let medExpiry = (document.getElementById("add-expiry") as HTMLInputElement).value;
+    const MedicineList = await fetchMedicines();
+    const medicine: Medicines = {
+        medicineID: 0,
+        medicineName: medName,
+        medicinePrice: parseInt(medPrice),
+        medicineCount: parseInt(medQuantity),
+        medicineExpiry: new Date(medExpiry)
+    };
+    addMedicine(medicine);
     alert("Medicine added successfully");
     displayMedicineDetails();
 }
@@ -245,35 +276,36 @@ function displayMedicineDetails() {
 
     hideAll();
     let medicine = document.getElementById("medicine-details-content") as HTMLDivElement;
-    let medicineTable=document.getElementById("medicine-table") as HTMLDivElement;
+    let medicineTable = document.getElementById("medicine-table") as HTMLDivElement;
     medicine.style.display = "flex";
-    medicineTable.style.display="block";
+    medicineTable.style.display = "block";
     displayMedicineList();
 };
 
 
 
 
-function displayMedicineListForPurchase() {
+async function displayMedicineListForPurchase() {
     const tableBody = document.querySelector("#purchase-table tbody") as HTMLTableSectionElement;
+    const MedicineList = await fetchMedicines();
     tableBody.innerHTML = "";
     MedicineList.forEach((medicine) => {
 
         const row = document.createElement("tr");
         row.innerHTML = `
-                <td>${medicine.MedicineName}</td>
-                <td>${medicine.MedicinePrice}</td>
-                <td>${medicine.MedicineCount}</td>
-                <td>${medicine.MedicineExpiry.toDateString()}</td>
+                <td>${medicine.medicineName}</td>
+                <td>${medicine.medicinePrice}</td>
+                <td>${medicine.medicineCount}</td>
+                <td>${medicine.medicineExpiry.toString().split('T')[0].split('-').reverse().join('/')}</td>
                 <td>
-                 <input type="button" value="BUY" id="${medicine.MedicineId}" onclick="setMedicineID('${medicine.MedicineId}');">
+                 <input type="button" value="BUY" id="${medicine.medicineID}" onclick="setMedicineID('${medicine.medicineID}');">
                 </td>
             `;
         tableBody.appendChild(row);
     });
 };
-function setMedicineID(id: string) {
-    medicineID = id;
+function setMedicineID(id: number) {
+    medicineIDNew = id;
     let purchase = document.getElementById("purchase-content") as HTMLDivElement;
     let buyForm = document.getElementById("buy-medicine") as HTMLDivElement;
     purchase.style.display = "none";
@@ -295,16 +327,41 @@ function getQuantity() {
     buyTheMedicines(parseInt(quantity));
 };
 
-function buyTheMedicines(quantity: number) {
-
+async function buyTheMedicines(quantity: number) {
+    const MedicineList = await fetchMedicines();
+    const OrderList=await fetchOrders();
     for (let i = 0; i < MedicineList.length; i++) {
-        if (medicineID == MedicineList[i].MedicineId) {
-            if (MedicineList[i].MedicineCount >= quantity) {
-                if (quantity * MedicineList[i].MedicinePrice <= currentUser.UserBalance) {
-                    let newOrder: Order = new Order(medicineID, currentUser.UserId, MedicineList[i].MedicineName, quantity,"Ordered");
-                    OrderList.push(newOrder);
-                    currentUser.UserBalance -= quantity * MedicineList[i].MedicinePrice;
-                    MedicineList[i].MedicineCount -= quantity;
+        if (medicineIDNew == MedicineList[i].medicineID) {
+            if (MedicineList[i].medicineCount >= quantity) {
+                if (quantity * MedicineList[i].medicinePrice <= currentUser.userBalance) {
+
+                    const order: Orders = {
+                        orderID: 0  ,
+                        medicineID: MedicineList[i].medicineID,
+                        userID: currentUser.userID,
+                        medicineName: MedicineList[i].medicineName,
+                        medicineCount: quantity,
+                        orderStatusCancel: "Ordered"
+                    };
+                    addOrder(order);
+                    
+                    currentUser.userBalance -= quantity * MedicineList[i].medicinePrice;
+                    const user: Users={
+                        userID:currentUser.userID,
+                        userName:currentUser.userName,
+                        userBalance:currentUser.userBalance,
+                        name:currentUser.name,
+                        userPassword:currentUser.userPassword
+                    }
+                    updateUser(currentUser.userID,user);
+                    const medicine: Medicines = {
+                        medicineID: MedicineList[i].medicineID,
+                        medicineName: MedicineList[i].medicineName,
+                        medicinePrice: MedicineList[i].medicinePrice,
+                        medicineCount: MedicineList[i].medicineCount - quantity,
+                        medicineExpiry: MedicineList[i].medicineExpiry
+                    }
+                    updateMedicine(MedicineList[i].medicineID, medicine);
                     alert("Purchase successfull")
                     hideAll();
                     return;
@@ -325,45 +382,88 @@ function buyTheMedicines(quantity: number) {
 
 
 
-function displayMedicineForCancel() {
+async function displayMedicineForCancel() {
+    const OrderList = await fetchOrders();
     const tableBody = document.querySelector("#cancel-table tbody") as HTMLTableSectionElement;
     tableBody.innerHTML = "";
     OrderList.forEach((order) => {
-        if (order.UserId == currentUser.UserId) {
+        if (order.userID == currentUser.userID) {
             const row = document.createElement("tr");
             row.innerHTML = `
-                        <td>${order.MedicineName}</td>
-                        <td>${order.MedicineCount}</td>
+                        <td>${order.medicineName}</td>
+                        <td>${order.medicineCount}</td>
                         <td>
                         
-                        <input type="button" value="CANCEL" id="cancel-btn" onclick="cancelMedicine('${order.OrderId}')">
+                        <input type="button" value="CANCEL" id="cancel-btn" onclick="cancelMedicine('${order.orderID}')">
                         </td>
-                        <td id="${order.OrderId}">${order.OrderStatusCancel}</td>
+                        <td id="${order.orderID}">${order.orderStatusCancel}</td>
                     `;
             tableBody.appendChild(row);
         }
 
     });
 }
-function cancelMedicine(id: string) {
-    globalOrderId = id;
-    let status = document.getElementById(globalOrderId) as HTMLElement;
+async function cancelMedicine(id: number) {
 
+
+    globalOrderId = id;
+    const MedicineList = await fetchMedicines();
+    let changeID = id.toString();
+    const OrderList = await fetchOrders();
     for (let i = 0; i < OrderList.length; i++) {
-        if (OrderList[i].OrderId == id) {
-            medicineCount(OrderList[i].MedicineId, OrderList[i].MedicineCount);
-            OrderList[i].OrderStatusCancel="Cancelled";
-            (document.getElementById(globalOrderId) as HTMLElement).innerHTML="Cancelled";
-            (document.getElementById("cancel-btn") as HTMLInputElement).disabled = true;
-            break;
+        for (let j = 0; j < MedicineList.length; j++) {
+            if (OrderList[i].orderID == id && MedicineList[j].medicineID == OrderList[i].medicineID && OrderList[i].orderStatusCancel != "Cancelled") {
+                const editOrder: Orders = {
+                    orderID: globalOrderId,
+                    medicineID: OrderList[i].medicineID,
+                    userID: OrderList[i].userID,
+                    medicineName: OrderList[i].medicineName,
+                    medicineCount: OrderList[i].medicineCount,
+                    orderStatusCancel: "Cancelled"
+                };
+                (document.getElementById(changeID) as HTMLElement).innerHTML = "Cancelled";
+                updateOrder(globalOrderId, editOrder);
+                currentUser.userBalance += MedicineList[i].medicinePrice * OrderList[i].medicineCount
+                const user: Users={
+                    userID:currentUser.userID,
+                    userName:currentUser.userName,
+                    userBalance:currentUser.userBalance,
+                    name:currentUser.name,
+                    userPassword:currentUser.userPassword
+                }
+                updateUser(currentUser.userID,user);
+                const editMedicine: Medicines = {
+                    medicineID: MedicineList[j].medicineID,
+                    medicineName: MedicineList[j].medicineName,
+                    medicinePrice: MedicineList[j].medicinePrice,
+                    medicineCount: MedicineList[j].medicineCount + OrderList[i].medicineCount,
+                    medicineExpiry: MedicineList[j].medicineExpiry
+                }
+                updateMedicine(MedicineList[j].medicineID, editMedicine);
+
+            }
         }
+
     }
+
+
+
+
 }
-function medicineCount(id: string, medicine: number) {
+async function medicineCount(id: number, medicine: number) {
+    const MedicineList = await fetchMedicines();
     for (let i = 0; i < MedicineList.length; i++) {
-        if (id == MedicineList[i].MedicineId) {
-            MedicineList[i].MedicineCount += medicine;
-            currentUser.UserBalance+=MedicineList[i].MedicinePrice*medicine;
+        if (id == MedicineList[i].medicineID) {
+            MedicineList[i].medicineCount += medicine;
+            currentUser.userBalance += MedicineList[i].medicinePrice * medicine;
+            const user: Users={
+                userID:currentUser.userID,
+                userName:currentUser.userName,
+                userBalance:currentUser.userBalance,
+                name:currentUser.name,
+                userPassword:currentUser.userPassword
+            }
+            updateUser(currentUser.userID,user);
             break;
         }
     }
@@ -378,15 +478,16 @@ function displayCancelDetails() {
 }
 
 //Order details
-function displayOrders() {
+async function displayOrders() {
+    const OrderList = await fetchOrders();
     const tableBody = document.querySelector("#order-table tbody") as HTMLTableSectionElement;
     tableBody.innerHTML = "";
     OrderList.forEach((order) => {
-        if (order.UserId == currentUser.UserId) {
+        if (order.userID == currentUser.userID) {
             const row = document.createElement("tr");
             row.innerHTML = `
-                        <td>${order.MedicineName}</td>
-                        <td>${order.MedicineCount}</td>
+                        <td>${order.medicineName}</td>
+                        <td>${order.medicineCount}</td>
 
                     `;
             tableBody.appendChild(row);
@@ -409,7 +510,15 @@ function displayTopUp() {
 
 function rechargeAmount() {
     let amount = (document.getElementById("amount-to-recharge") as HTMLInputElement).value;
-    currentUser.UserBalance += parseInt(amount);
+    currentUser.userBalance += parseInt(amount);
+    const user: Users={
+        userID:currentUser.userID,
+        userName:currentUser.userName,
+        userBalance:currentUser.userBalance,
+        name:currentUser.name,
+        userPassword:currentUser.userPassword
+    }
+    updateUser(currentUser.userID,user);
     alert("recharge successfull");
     displayMedicineList();
 }
@@ -418,7 +527,7 @@ function displayShowBalanceDetails() {
     let showbalance = document.getElementById("show-balance-content") as HTMLDivElement;
     showbalance.style.display = "flex";
     let balance = document.getElementById("display-balance") as HTMLInputElement;
-    balance.value = (currentUser.UserBalance).toString();
+    balance.value = (currentUser.userBalance).toString();
 
 
 }
@@ -431,7 +540,7 @@ function hideAll() {
     let medicine = document.getElementById("medicine-details-content") as HTMLDivElement;
     let buymedicine = document.getElementById("buy-medicine") as HTMLDivElement;
     let buyForm = document.getElementById("edit-form") as HTMLDivElement;
-    let displayForm=document.getElementById("add-form") as HTMLDivElement;
+    let displayForm = document.getElementById("add-form") as HTMLDivElement;
     purchase.style.display = "none";
     cancel.style.display = "none";
     topup.style.display = "none";
@@ -440,5 +549,119 @@ function hideAll() {
     medicine.style.display = "none";
     buymedicine.style.display = "none";
     buyForm.style.display = "none";
-    displayForm.style.display="none";
+    displayForm.style.display = "none";
+}
+
+async function fetchUsers(): Promise<Users[]> {
+    const apiUrl = 'http://localhost:5137/api/User';
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+        throw new Error('Failed to fetch contacts');
+    }
+    return await response.json();
+}
+
+async function fetchMedicines(): Promise<Medicines[]> {
+    const apiUrl = 'http://localhost:5137/api/Medicine';
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+        throw new Error('Failed to fetch contacts');
+    }
+    return await response.json();
+}
+
+async function fetchOrders(): Promise<Orders[]> {
+    const apiUrl = 'http://localhost:5137/api/Order';
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+        throw new Error('Failed to fetch contacts');
+    }
+    return await response.json();
+}
+
+async function addContact(contact: Users): Promise<void> {
+    const response = await fetch('http://localhost:5137/api/User', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contact)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to add contact');
+    }
+}
+
+async function addMedicine(contact: Medicines): Promise<void> {
+    const response = await fetch('http://localhost:5137/api/Medicine', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contact)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to add contact');
+    }
+}
+async function addOrder(contact: Orders): Promise<void> {
+    const response = await fetch('http://localhost:5137/api/Order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contact)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to add contact');
+    }
+}
+async function updateMedicine(id: number, contact: Medicines): Promise<void> {
+    const response = await fetch(`http://localhost:5137/api/Medicine/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contact)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to update contact');
+    }
+
+}
+async function updateUser(id: number, contact: Users): Promise<void> {
+    const response = await fetch(`http://localhost:5137/api/User/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contact)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to update contact');
+    }
+
+}
+async function updateOrder(id: number, contact: Orders): Promise<void> {
+    const response = await fetch(`http://localhost:5137/api/Order/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contact)
+    });
+    if (!response.ok) {
+        throw new Error('Failed to update contact');
+    }
+
+}
+
+async function deleteMedicine(id: number): Promise<void> {
+    const response = await fetch(`http://localhost:5137/api/Medicine/${id}`, {
+        method: 'DELETE'
+    });
+    if (!response.ok) {
+        throw new Error('Failed to delete contact');
+    }
+
 }
